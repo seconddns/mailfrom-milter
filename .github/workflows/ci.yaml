@@ -111,6 +111,9 @@ jobs:
           else
             IS_RELEASE=true
           fi
+          # Image tags carry the bare version, as dkim-milter's and arc-milter's
+          # and the chart's appVersion; the git tag and release keep the v.
+          echo "app_version=${APP_VERSION}" >> "$GITHUB_OUTPUT"
           echo "tag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
           echo "is_release=${IS_RELEASE}" >> "$GITHUB_OUTPUT"
 
@@ -140,7 +143,7 @@ jobs:
           tags: |
             type=sha,prefix=,format=short
             type=raw,value=latest
-            type=raw,value=${{ steps.version.outputs.tag }},enable=${{ steps.version.outputs.is_release == 'true' }}
+            type=raw,value=${{ steps.version.outputs.app_version }},enable=${{ steps.version.outputs.is_release == 'true' }}
 
       - name: Extract metadata (Docker Hub)
         id: meta_hub
@@ -149,7 +152,7 @@ jobs:
           images: ${{ env.DOCKERHUB_IMAGE }}
           tags: |
             type=raw,value=latest
-            type=raw,value=${{ steps.version.outputs.tag }},enable=${{ steps.version.outputs.is_release == 'true' }}
+            type=raw,value=${{ steps.version.outputs.app_version }},enable=${{ steps.version.outputs.is_release == 'true' }}
 
       - name: Build and push
         uses: docker/build-push-action@v7.4.0
