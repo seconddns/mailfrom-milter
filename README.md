@@ -265,7 +265,7 @@ Every push to `main` triggers lint → test → build:
 | Trigger | GHCR tags | Docker Hub tags | Release |
 |:---|:---|:---|:---|
 | Push to `main` | `<sha>` + `latest` | `latest` | — |
-| Push to `main` with new `appVersion` in `helm/Chart.yaml` | `<sha>` + `latest` + `v{appVersion}` | `latest` + `v{appVersion}` | GitHub Release created automatically |
+| Push to `main` with new `appVersion` in `helm/Chart.yaml` | `<sha>` + `latest` + `{appVersion}` | `latest` + `{appVersion}` | GitHub Release created automatically |
 
 GHCR is CI's working set; Docker Hub keeps releases and `latest` only.
 
@@ -275,4 +275,4 @@ The sandbox values file (`helm_values/values-sandbox.yaml`) is always updated wi
 
 1. Bump `appVersion` in `helm/Chart.yaml` in your PR (e.g. `"1.2.0"`)
 2. Merge to `main`
-3. CI automatically creates git tag `v1.2.0`, GitHub Release, and pushes the versioned image
+3. CI automatically creates git tag `v1.2.0` and its GitHub Release, and pushes the image tagged `1.2.0`: the git tag keeps the `v`, the image tag does not, as in dkim-milter and arc-milter
