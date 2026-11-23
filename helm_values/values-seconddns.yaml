@@ -1,0 +1,41 @@
+# SecondDNS production: the relay (seconddns/k8s_relay) in namespace relay
+# calls this milter on every message. Release image from Docker Hub.
+image:
+  repository: docker.io/0kaba0/mailfrom-milter
+  tag: "1.3.18"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+# Two: Postfix accepts mail when the milter is unreachable
+# (milter_default_action = accept), so a lone pod restarting means mail
+# goes out with no sender check.
+replicaCount: 2
+
+milterPort: 10031
+metricsPort: 8081
+
+# reject | discard | quarantine_header | accept
+MF_ACTION: reject
+REJECT_CODE: "421"
+MF_SENDER_ADD: "yes"
+
+logLevel: ""
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 100m
+    memory: 64Mi
+
+nodeSelector: {}
+
+# Four cases against the relay after each sync: no auth, auth domain ≠
+# envelope, From ≠ envelope (all refused) and all matching (accepted; one
+# real message to TEST_MAIL_TO). Credentials from ExternalSecret
+# relay-mailfrom-creds (seconddns/k8s_eso).
+postDeployTest:
+  enabled: true
+  credentialsSecret: "relay-mailfrom-creds"

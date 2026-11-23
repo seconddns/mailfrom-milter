@@ -1,0 +1,28 @@
+# SecondDNS production: mailfrom-milter for the relay in namespace relay,
+# from this fork's seconddns-patches. Applied once by hand:
+# kubectl apply -f argocd-app-seconddns.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mailfrom-milter
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/seconddns/mailfrom-milter.git
+    targetRevision: seconddns-patches
+    path: helm
+    helm:
+      valueFiles:
+        - ../helm_values/values-seconddns.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: relay
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
