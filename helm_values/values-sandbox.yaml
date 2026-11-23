@@ -1,6 +1,6 @@
 image:
   repository: ghcr.io/yarilomail/mailfrom-milter
-  tag: "6b9990d"
+  tag: "5d22aa8"
   pullPolicy: Always
 
 # The image is public; the stand namespace has no pull secret.
